@@ -106,9 +106,10 @@ if [[ -n "$FILTER" ]]; then
         [ -d "$f" ] && continue
         if [[ -n "$EXCLUDE" ]] ; then
             [[ "$f" == $EXCLUDE ]] && continue
-            # Always remove .github actions folder
-            [[ "$f" == .github/* ]] && continue
         fi
+        # Always remove .github actions folder
+        [[ "$f" == .github/* ]] && continue
+
         file_dir=$(dirname "${f}")
         mkdir -p "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}" && cp "${f}" "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}"
     done
