@@ -53,7 +53,8 @@ else
     DST_WIKI=""
 fi
 
-if [[ -n "$EXCLUDE" && -z "$FILTER" ]]; then
+# tm - always have filter set
+if [[ -z "$FILTER" ]]; then
     FILTER="**"
 fi
 
@@ -109,6 +110,10 @@ if [[ -n "$FILTER" ]]; then
         fi
         # Always remove .github actions folder
         [[ "$f" == .github/* ]] && continue
+
+        # Always remove other things we don't want
+        [[ "$f" == k8s/* ]] && continue
+        [[ "$f" == etc/* ]] && continue
 
         file_dir=$(dirname "${f}")
         mkdir -p "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}" && cp "${f}" "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}"
