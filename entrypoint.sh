@@ -114,6 +114,7 @@ if [[ -n "$FILTER" ]]; then
         # Always remove other things we don't want
         [[ "$f" == k8s/* ]] && continue
         [[ "$f" == etc/* ]] && continue
+        [[ "$f" == fastlane/jenkins/* ]] && continue
 
         file_dir=$(dirname "${f}")
         mkdir -p "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}" && cp "${f}" "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}"
