@@ -116,6 +116,10 @@ if [[ -n "$FILTER" ]]; then
         [[ "$f" == etc/* ]] && continue
         [[ "$f" == fastlane/jenkins/* ]] && continue
 
+        # Ignore submodules, these aren't copied correctly at the moment
+        [[ "$f" == lib/* ]] && continue
+        [[ "$f" == .gitmodules ]] && continue
+
         file_dir=$(dirname "${f}")
         mkdir -p "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}" && cp "${f}" "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}"
     done
