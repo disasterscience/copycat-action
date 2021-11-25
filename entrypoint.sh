@@ -92,6 +92,7 @@ fi
 rm -rf ${SRC_REPO_NAME}/.git
 
 if [[ -n "$FILE_FILTER" ]]; then
+    echo "Applying file filter: '$FILE_FILTER'"
     find ${SRC_REPO_NAME}/ -type f -not -name "${FILE_FILTER}" -exec rm {} \;
 fi
 
@@ -101,24 +102,25 @@ if [[ -n "$FILTER" ]]; then
     cd ${SRC_REPO_NAME}
     FINAL_SOURCE="${tmp_dir}/${SRC_REPO_NAME}/${SRC_PATH}"
     SAVEIFS=$IFS
+    echo "Copying to $FINAL_SOURCE"
     IFS=$(echo -en "\n\b")
     for f in ${FILTER} ; do
         [ -e "$f" ] || continue
-        [ -d "$f" ] && continue
+
+        # tm - keep directory, for submodule support
+        #[ -d "$f" ] && continue
+
         if [[ -n "$EXCLUDE" ]] ; then
             [[ "$f" == $EXCLUDE ]] && continue
         fi
-        # Always remove .github actions folder
+
+        # tm - Always remove .github actions folder
         [[ "$f" == .github/* ]] && continue
 
-        # Always remove other things we don't want
+        # tm - Always remove other things we don't want
         [[ "$f" == k8s/* ]] && continue
         [[ "$f" == etc/* ]] && continue
         [[ "$f" == fastlane/jenkins/* ]] && continue
-
-        # Ignore submodules, these aren't copied correctly at the moment
-        [[ "$f" == lib/* ]] && continue
-        [[ "$f" == .gitmodules ]] && continue
 
         file_dir=$(dirname "${f}")
         mkdir -p "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}" && cp "${f}" "${tmp_dir}/${SRC_REPO_NAME}/${file_dir}"
@@ -126,7 +128,6 @@ if [[ -n "$FILTER" ]]; then
     IFS=$SAVEIFS
     cd ..
 fi
-
 
 git clone --branch ${DST_BRANCH} --single-branch --depth 1 https://${PERSONAL_TOKEN}@github.com/${DST_REPO}.git ${DST_REPO_DIR}
 if [ "$?" -ne 0 ]; then
@@ -157,6 +158,8 @@ mkdir -p "${DST_REPO_DIR}/${DST_PATH%/*}" || exit "$?"
 cp -rf "${FINAL_SOURCE}" "${DST_REPO_DIR}/${DST_PATH}" || exit "$?"
 cd "${DST_REPO_DIR}" || exit "$?"
 
+echo "Destination ${DST_REPO_DIR}"
+
 if [[ -z "${COMMIT_MESSAGE}" ]]; then
     if [ -f "${BASE_PATH}/${FINAL_SOURCE}" ]; then
         COMMIT_MESSAGE="Update file in \"${SRC_PATH}\" from \"${GITHUB_REPOSITORY}\""
@@ -175,4 +178,4 @@ else
     git push origin ${DST_BRANCH}
 fi
 
-echo "Copying complete 👌"
+echo "Copying complete 🚀🚀 "
